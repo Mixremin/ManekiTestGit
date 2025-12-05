@@ -390,6 +390,7 @@ GameObject:
   - component: {fileID: 489012474}
   - component: {fileID: 489012473}
   - component: {fileID: 489012472}
+  - component: {fileID: 489012476}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -480,6 +481,20 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &489012476
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 489012471}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e4fe6fddf51b0a14f9e17c8db9eb61a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  blackScreen: {fileID: 1303081637}
+  fadeDuration: 1
 --- !u!1 &526464113
 GameObject:
   m_ObjectHideFlags: 0
@@ -855,6 +870,10 @@ PrefabInstance:
       propertyPath: cameraFollow
       value: 
       objectReference: {fileID: 526464114}
+    - target: {fileID: 2685938045276783677, guid: cdfcb62f17cb6404fb524e4e06daba0b, type: 3}
+      propertyPath: uiController
+      value: 
+      objectReference: {fileID: 489012476}
     - target: {fileID: 2685938045276783677, guid: cdfcb62f17cb6404fb524e4e06daba0b, type: 3}
       propertyPath: gridController
       value: 

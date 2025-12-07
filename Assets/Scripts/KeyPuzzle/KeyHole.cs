@@ -5,12 +5,18 @@ using UnityEngine.Events;
 
 public class KeyHole : MonoBehaviour
 {
-    [SerializeField] private EColor requiredColor;
-    [SerializeField] private Image keyHoleBackground;
+    [Header("Images")]
+    [SerializeField] private Sprite diamondSprite;
+    [SerializeField] private Sprite goldSprite;
+    [SerializeField] private Sprite emeraldSprite;
 
+    [Header("Key Hole")]
+    [SerializeField] private EColor requiredColor;
+    [SerializeField] private Image keyHoleSprite;
+    [SerializeField] private TextMeshProUGUI countText;
     [SerializeField] private int needCount = 3;
     [SerializeField] private int currentCount = 0;
-    [SerializeField] private TextMeshProUGUI countText;
+    
 
     public UnityEvent OnAllKeysPlaced;
 
@@ -24,11 +30,11 @@ public class KeyHole : MonoBehaviour
 
     public void SetColor(EColor color) {
         requiredColor = color;
-        keyHoleBackground.color = color switch {
-            EColor.RED => Color.red,
-            EColor.BLUE => Color.blue,
-            EColor.GREEN => Color.green,
-            _ => Color.white
+        keyHoleSprite.sprite = color switch {
+            EColor.DIAMOND => diamondSprite,
+            EColor.GOLD => goldSprite,
+            EColor.EMERALD => emeraldSprite,
+            _ => null
         };
     }
 

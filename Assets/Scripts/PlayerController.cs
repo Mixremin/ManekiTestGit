@@ -8,6 +8,7 @@ public class PlayerController : MonoBehaviour, IEntity
     [Header("Movement")]
     [SerializeField] private float moveDuration = 0.5f;
     [SerializeField] private Collider playerCollider;
+    [SerializeField] private GameObject view;
     [Header("Animation")]
     [SerializeField] private float shakeDuration = 0.3f;
     [SerializeField] private float shakeStrength = 0.1f;
@@ -19,9 +20,11 @@ public class PlayerController : MonoBehaviour, IEntity
     public void Move(Vector3 position)
     {
         if (locked) return;
-
+        
         locked = true;
-        moveTween = transform.DOMove(position, moveDuration).SetEase(Ease.InOutSine).OnComplete(() => locked = false);
+        moveTween = view.transform.DOLookAt(position, 0.1f).OnComplete(() => {
+            moveTween = transform.DOMove(position, moveDuration).SetEase(Ease.InOutSine).OnComplete(() => locked = false);
+        });
     }
 
     public void NoMove() {
@@ -44,6 +47,7 @@ public class PlayerController : MonoBehaviour, IEntity
         Debug.Log("Collision with " + collision.transform.name);
         if (collision.transform.TryGetComponent<EnemyController>(out var enemyController))
         {   
+            locked = true;
             moveTween.Kill();
             OnEnemyHit?.Invoke();
             SetColliderState(false);

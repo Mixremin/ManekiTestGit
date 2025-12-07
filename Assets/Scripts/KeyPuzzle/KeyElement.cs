@@ -7,16 +7,19 @@ public class KeyElement : AbsDraggableObject
 
     [SerializeField] private EColor color;
     [SerializeField] private Image keyImage;
+    [SerializeField] private Sprite diamondSprite;
+    [SerializeField] private Sprite goldSprite;
+    [SerializeField] private Sprite emeraldSprite;
     
     //public EColor Color => color;
     
     public void SetColor(EColor color) {
         this.color = color;
-        keyImage.color = color switch {
-            EColor.RED => Color.red,
-            EColor.BLUE => Color.blue,
-            EColor.GREEN => Color.green,
-            _ => Color.white
+        keyImage.sprite = color switch {
+            EColor.DIAMOND => diamondSprite,
+            EColor.GOLD => goldSprite,
+            EColor.EMERALD => emeraldSprite,
+            _ => null
         };
     }
 

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Numerics;
 using Unity.VisualScripting;
 using UnityEngine;
+using Vector3 = UnityEngine.Vector3;
 
 public class RoadController : MonoBehaviour
 {
@@ -9,7 +10,7 @@ public class RoadController : MonoBehaviour
     [SerializeField] private bool isRoadActive = false;
 
     [Header("Enemy prefabs")]
-    [SerializeField] private GameObject enemyPrefab;
+    [SerializeField] private List<GameObject> enemyPrefabs;
     [SerializeField] private Transform leftSideSpawnPoint;
     [SerializeField] private Transform rightSideSpawnPoint;
     [Header("Cycle settings")]
@@ -27,22 +28,30 @@ public class RoadController : MonoBehaviour
     private int enemiesInLineCounter = 0;
     private int waveWaitingCounter = 0;
     private Transform currentSpawnPoint;
+    private Transform endSpawnPoint;
+    private float distanceBetweenSpawnPoints;
+    private float enemyMoveDuration;
 
     void Awake() {
         if(direction == EDirection.LEFT) {
             currentSpawnPoint = rightSideSpawnPoint;
-            directionVector = Vector3Int.left;
+            endSpawnPoint = leftSideSpawnPoint;
+            //directionVector = Vector3Int.left;
         } else {
             currentSpawnPoint = leftSideSpawnPoint;
-            directionVector = Vector3Int.right;
+            endSpawnPoint = rightSideSpawnPoint;
+            //directionVector = Vector3Int.right;
         }
+
+        distanceBetweenSpawnPoints = Vector3.Distance(currentSpawnPoint.position, endSpawnPoint.position);
+        enemyMoveDuration = distanceBetweenSpawnPoints * cycleInterval;
     }
 
     public void StartRoadSpawn() {
         isRoadActive = true;
 
         CheckForSpawn();
-        MoveEnemies();
+        //MoveEnemies();
     }
 
     public void StopRoadSpawn() {
@@ -63,34 +72,35 @@ public class RoadController : MonoBehaviour
             cycleTimer += Time.deltaTime;
             if (cycleTimer >= cycleInterval) {
                     CheckForSpawn();
-                    MoveEnemies();
+                    //MoveEnemies();
                     cycleTimer = 0;
                 }
         }
     }
 
     private void SpawnEnemy() {
-        GameObject enemy = Instantiate(enemyPrefab, currentSpawnPoint.position, UnityEngine.Quaternion.identity);
+        GameObject enemy = Instantiate(enemyPrefabs[Random.Range(0, enemyPrefabs.Count)], currentSpawnPoint.position, UnityEngine.Quaternion.identity);
         enemy.transform.parent = transform;
         EnemyController enemyController = enemy.GetComponent<EnemyController>();
-        enemyController.SetMoveDuration(cycleInterval);
+        enemyController.SetMoveDuration(enemyMoveDuration);
+        enemyController.Move(endSpawnPoint.position);
         enemies.Add(enemyController);
     }
 
-    private void MoveEnemies() {
-        for (int i = enemies.Count - 1; i >= 0; i--) {
-            var enemy = enemies[i];
-            Vector3Int currentCell = GameController.Instance.gridController.GetGrid().WorldToCell(enemy.gameObject.transform.position);
-            Vector3Int newCell = currentCell + directionVector;
-            if (GameController.Instance.gridController.GetBlockType(new Vector3Int(newCell.x, 0, newCell.z)) == EBlockType.WALL) {
-                enemy.NoMove();
-                enemies.RemoveAt(i);
-            }
-            else {
-                enemy.Move(GameController.Instance.gridController.GetGrid().GetCellCenterWorld(newCell));
-            }
-        }
-    }
+    // private void MoveEnemies() {
+    //     for (int i = enemies.Count - 1; i >= 0; i--) {
+    //         var enemy = enemies[i];
+    //         Vector3Int currentCell = GameController.Instance.gridController.GetGrid().WorldToCell(enemy.gameObject.transform.position);
+    //         Vector3Int newCell = currentCell + directionVector;
+    //         if (GameController.Instance.gridController.GetBlockType(new Vector3Int(newCell.x, 0, newCell.z)) == EBlockType.WALL) {
+    //             enemy.NoMove();
+    //             enemies.RemoveAt(i);
+    //         }
+    //         else {
+    //             enemy.Move(GameController.Instance.gridController.GetGrid().GetCellCenterWorld(newCell));
+    //         }
+    //     }
+    // }
 
     private void CheckForSpawn() {
         if(enemiesInLineCounter > 0) {

@@ -59,15 +59,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.4415095, g: 0.3557067, b: 0.3557067, a: 0.392}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 21300000, guid: e01b2e07781898d41af266f9952d2030, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -96,7 +96,7 @@ MonoBehaviour:
   m_ChildAlignment: 4
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 90, y: 90}
+  m_CellSize: {x: 100, y: 100}
   m_Spacing: {x: 5, y: 5}
   m_Constraint: 0
   m_ConstraintCount: 2
@@ -189,7 +189,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f079765cbfe9ac4587744cac791e4eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  keyHoleController: {fileID: 4328082883977046310}
   keyPrefab: {fileID: 1070851558989060108, guid: 7545f43f32639c34ca27485a75a76e3c, type: 3}
   keyGridLayoutGroup: {fileID: 2047386055325709770}
   keyTargetColor: 0
@@ -230,7 +229,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -100, y: -100}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8761075098643199891
 CanvasRenderer:
@@ -260,7 +259,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: a9a927943bfaf274cb8843b7f6229767, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 3884c3e33871b434d834f775f9bbdf0a, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -467,7 +466,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 0.9104036, b: 0, a: 1}
+  m_Color: {r: 0.87169814, g: 0.5962179, b: 0.01809183, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -496,11 +495,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc312479c947e794f9b4839e1e44c334, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  diamondSprite: {fileID: 21300000, guid: 9542a765d5714cd44a7f0a72f30f8769, type: 3}
+  goldSprite: {fileID: 21300000, guid: 3884c3e33871b434d834f775f9bbdf0a, type: 3}
+  emeraldSprite: {fileID: 21300000, guid: 3fe09c5887ce50b4aa31420482efb8f7, type: 3}
   requiredColor: 0
-  keyHoleBackground: {fileID: 7205408232150227257}
+  keyHoleSprite: {fileID: 7013986644328311276}
+  countText: {fileID: 2664441655109928318}
   needCount: 3
   currentCount: 0
-  countText: {fileID: 2664441655109928318}
   OnAllKeysPlaced:
     m_PersistentCalls:
       m_Calls: []
@@ -556,3 +558,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   keyGridController: {fileID: 3748131841267868399}
   keyHoleController: {fileID: 4328082883977046310}
+  rectTransform: {fileID: 0}

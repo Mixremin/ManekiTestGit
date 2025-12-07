@@ -15,6 +15,7 @@ public abstract class AbsDraggableObject : MonoBehaviour,
     protected Canvas parentCanvas;
     protected RectTransform rectTransform;
     protected CanvasGroup canvasGroup;
+    protected int originalSiblingIndex;
 
     protected virtual void Awake()
     {
@@ -49,6 +50,10 @@ public abstract class AbsDraggableObject : MonoBehaviour,
         canvasGroup.blocksRaycasts = false;
         canvasGroup.alpha = dragAlpha;
         
+        // Store original sibling index and move to last sibling to render on top
+        originalSiblingIndex = transform.GetSiblingIndex();
+        transform.SetAsLastSibling();
+        
         RectTransformUtility.ScreenPointToWorldPointInRectangle(
             rectTransform, 
             eventData.position, 
@@ -82,6 +87,9 @@ public abstract class AbsDraggableObject : MonoBehaviour,
         isDragging = false;
         canvasGroup.blocksRaycasts = true;
         canvasGroup.alpha = 1f;
+        
+        // Restore original sibling index
+        transform.SetSiblingIndex(originalSiblingIndex);
 
         OnDragEnd(eventData);
 

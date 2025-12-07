@@ -2,7 +2,7 @@
 
 public enum EColor 
 {
-    RED,
-    BLUE,
-    GREEN
+    DIAMOND,
+    GOLD,
+    EMERALD
 }

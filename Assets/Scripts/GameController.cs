@@ -14,6 +14,8 @@ public class GameController : MonoBehaviour
     [SerializeField] private Transform playerLineCenter;
 
     [SerializeField] private Transform playerSpawnPoint;
+    [Header("Swipe")]
+    [SerializeField] private SwipeController swipeController;
 
     [Header("Camera")]
     [SerializeField] private CinemachineCamera cameraFollow;
@@ -89,6 +91,7 @@ public class GameController : MonoBehaviour
     }
 
     public void RespawnPlayer() {
+        DisableSwipe();
         StopRoadSpawn();
         uiController.ShowBlackScreen(() => {
             player.transform.position = playerSpawnPoint.position;
@@ -97,6 +100,7 @@ public class GameController : MonoBehaviour
             playerController.SetColliderState(true);
             uiController.HideBlackScreen(() => {
                 playerController.SetLockedState(false);
+                EnableSwipe();
                 roadController.ForEach(road => road.StartRoadSpawn());
             });
         });
@@ -106,10 +110,18 @@ public class GameController : MonoBehaviour
         StopRoadSpawn();
         uiController.ShowKeyPuzzle();
         playerController.SetLockedState(true);
+        DisableSwipe();
     }
 
     public void StopRoadSpawn() {
         roadController.ForEach(road => road.StopRoadSpawn());
+    }
+
+    private void DisableSwipe() {
+        swipeController.enabled = false;
+    }
+    private void EnableSwipe() {
+        swipeController.enabled = true;
     }
 
      private void OnDestroy() {

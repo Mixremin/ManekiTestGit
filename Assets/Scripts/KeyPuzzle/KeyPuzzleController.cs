@@ -6,28 +6,27 @@ public class KeyPuzzleController : MonoBehaviour
 {
     [SerializeField] private KeyGridController keyGridController;
     [SerializeField] private KeyHole keyHoleController;
-    private RectTransform rectTransform;
+    [SerializeField] private RectTransform rectTransform;
 
-    private void Awake() {
-        rectTransform = GetComponent<RectTransform>();
-        rectTransform.localScale = Vector3.zero;
-        rectTransform.gameObject.SetActive(false);
+    // private void Start() {
+    //     rectTransform = GetComponent<RectTransform>();
+    //     rectTransform.localScale = Vector3.zero;
+    //     rectTransform.gameObject.SetActive(false);
 
+    //     keyHoleController.OnAllKeysPlaced.AddListener(HidePuzzle);
+    // }
+
+    private void OnEnable() {
         keyHoleController.OnAllKeysPlaced.AddListener(HidePuzzle);
     }
 
-    //Remove when fired by UI controller
-    private void OnEnable() {
-        ShowPuzzle();
-    }
-
-    private void ShowPuzzle() {
+    public void ShowPuzzle() {
         rectTransform.gameObject.SetActive(true);
         InitRandomKeyHoleColor();
         rectTransform.DOScale(1, 0.5f).SetEase(Ease.OutBack).OnComplete(() => keyGridController.StartPuzzle());
     }
 
-    private void HidePuzzle() {
+    public void HidePuzzle() {
         rectTransform.DOScale(0, 0.5f).SetEase(Ease.InBack).OnComplete(() => rectTransform.gameObject.SetActive(false));
     }
 

@@ -9,6 +9,9 @@ public class UIController : MonoBehaviour
     [SerializeField] private Image blackScreen;
     [SerializeField] private float fadeDuration = 1f;
 
+    [Header("Key Puzzle")]
+    [SerializeField] private KeyPuzzleController keyPuzzleController;
+
     public void ShowBlackScreen(Action onComplete = null) {
         blackScreen.gameObject.SetActive(true);
         blackScreen.DOFade(1, fadeDuration).SetEase(Ease.InOutSine).OnComplete(() => onComplete?.Invoke());
@@ -19,5 +22,13 @@ public class UIController : MonoBehaviour
             blackScreen.gameObject.SetActive(false);
             onComplete?.Invoke();
         });
+    }
+
+    public void ShowKeyPuzzle() {
+        keyPuzzleController.ShowPuzzle();
+    }
+
+    public void HideKeyPuzzle() {
+        keyPuzzleController.HidePuzzle();
     }
 }

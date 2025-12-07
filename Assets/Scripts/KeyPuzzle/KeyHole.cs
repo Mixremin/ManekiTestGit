@@ -38,10 +38,12 @@ public class KeyHole : MonoBehaviour
     }
 
     public void AddCount() {
+        Debug.Log("AddCount: " + currentCount);
         currentCount++;
         UpdateCountText();
         
         if (currentCount >= needCount) {
+            Debug.Log("OnAllKeysPlaced triggered");
             OnAllKeysPlaced?.Invoke();
         }
     }

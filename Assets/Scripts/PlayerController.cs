@@ -16,17 +16,26 @@ public class PlayerController : MonoBehaviour, IEntity
 
     private Tween moveTween;
     public Action OnEnemyHit;
-    public void Move(Vector3 position, bool canMove)
+    public void Move(Vector3 position)
     {
         if (locked) return;
-        if (canMove) 
-        {
-            locked = true;
-            moveTween = transform.DOMove(position, moveDuration).SetEase(Ease.InOutSine).OnComplete(() => locked = false);
-        }
-        else 
-        {
-            transform.DOShakeScale(shakeDuration, shakeStrength, shakeVibrato, shakeRandomness, false, ShakeRandomnessMode.Full);
+
+        locked = true;
+        moveTween = transform.DOMove(position, moveDuration).SetEase(Ease.InOutSine).OnComplete(() => locked = false);
+    }
+
+    public void NoMove() {
+        if (locked) return;
+
+        transform.DOShakeScale(shakeDuration, shakeStrength, shakeVibrato, shakeRandomness, false, ShakeRandomnessMode.Full);
+    }
+
+    public void Interact(AbsBlock block) {
+        if (locked) return;
+
+        block.TryGetComponent(out IInteractable interactable);
+        if (interactable != null) {
+            interactable.Interact();
         }
     }
 
@@ -49,5 +58,9 @@ public class PlayerController : MonoBehaviour, IEntity
 
     public void SetLockedState(bool state) {
         locked = state;
+    }
+
+    public float GetMoveDuration() {
+        return moveDuration;
     }
 }

@@ -83,11 +83,11 @@ public class RoadController : MonoBehaviour
             Vector3Int currentCell = GameController.Instance.gridController.GetGrid().WorldToCell(enemy.gameObject.transform.position);
             Vector3Int newCell = currentCell + directionVector;
             if (GameController.Instance.gridController.GetBlockType(new Vector3Int(newCell.x, 0, newCell.z)) == EBlockType.WALL) {
-                enemy.Move(enemy.gameObject.transform.position, false);
+                enemy.NoMove();
                 enemies.RemoveAt(i);
             }
             else {
-                enemy.Move(GameController.Instance.gridController.GetGrid().GetCellCenterWorld(newCell), true);
+                enemy.Move(GameController.Instance.gridController.GetGrid().GetCellCenterWorld(newCell));
             }
         }
     }

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.Cinemachine;
 using UnityEngine;
+using DG.Tweening;
 
 public class GameController : MonoBehaviour
 {
@@ -9,6 +10,8 @@ public class GameController : MonoBehaviour
 
     [Header("Player")]
     [SerializeField] private GameObject playerPrefab;
+
+    [SerializeField] private Transform playerLineCenter;
 
     [SerializeField] private Transform playerSpawnPoint;
 
@@ -39,10 +42,11 @@ public class GameController : MonoBehaviour
 
     private void Start() {
         player = Instantiate(playerPrefab, playerSpawnPoint.position, Quaternion.identity);
+        playerLineCenter.position = player.transform.position;
         playerController = player.GetComponent<PlayerController>();
         playerController.OnEnemyHit += RespawnPlayer;
 
-        cameraFollow.Follow = player.transform;
+        cameraFollow.Follow = playerLineCenter.transform;
         
         grid = gridController.GetGrid();
         
@@ -59,23 +63,36 @@ public class GameController : MonoBehaviour
             _ => Vector3Int.zero
         };
 
-        bool canMove = true;
-
-        //Костыль для проверки
         Vector3Int testCell = newCell;
         testCell.y = 0;
+        AbsBlock block = gridController.GetBlock(testCell);
 
-        if (gridController.GetBlockType(testCell) == EBlockType.WALL) {
-            canMove = false;
-        }
 
-        playerController.Move(grid.GetCellCenterWorld(newCell), canMove);
+        switch (block?.GetBlockType() ?? EBlockType.NONE) {
+            case EBlockType.NONE:
+                AdjustPlayerLineCenter(grid.GetCellCenterWorld(newCell)); 
+                playerController.Move(grid.GetCellCenterWorld(newCell));
+                break;
+            case EBlockType.WALL:
+                playerController.NoMove();
+                break;
+            case EBlockType.INTERACTABLE:
+                playerController.Interact(block);
+                break;
+            }
+
+        
+    }
+
+    private void AdjustPlayerLineCenter(Vector3 newCell) {
+        playerLineCenter.DOMove(new Vector3(0.5f, newCell.y, newCell.z), playerController.GetMoveDuration());
     }
 
     public void RespawnPlayer() {
         StopRoadSpawn();
         uiController.ShowBlackScreen(() => {
             player.transform.position = playerSpawnPoint.position;
+            playerLineCenter.position = player.transform.position;
             roadController.ForEach(road => road.ClearEnemies());
             playerController.SetColliderState(true);
             uiController.HideBlackScreen(() => {
@@ -83,6 +100,12 @@ public class GameController : MonoBehaviour
                 roadController.ForEach(road => road.StartRoadSpawn());
             });
         });
+    }
+
+    public void StartKeyPuzzle() {
+        StopRoadSpawn();
+        uiController.ShowKeyPuzzle();
+        playerController.SetLockedState(true);
     }
 
     public void StopRoadSpawn() {

@@ -23,13 +23,11 @@ public class GridController : MonoBehaviour
     }
 
     public EBlockType GetBlockType(Vector3Int cell) {
-        gridBlocks.TryGetValue(cell, out var block);    
-        if (block != null) {
-            return block.GetBlockType();
-        }
-        else {
-            return EBlockType.NONE;
-        }
+        return GetBlock(cell)?.GetBlockType() ?? EBlockType.NONE;
+    }
+
+    public AbsBlock GetBlock(Vector3Int cell) {
+        return gridBlocks.TryGetValue(cell, out AbsBlock block) ? block : null;
     }
 
     public Grid GetGrid() {

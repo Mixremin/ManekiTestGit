@@ -8,16 +8,13 @@ public class EnemyController : MonoBehaviour, IEntity
 
     private Tween moveTween;
 
-    public void Move(Vector3 position, bool canMove)
+    public void Move(Vector3 position)
     {
-        if (canMove)
-        {
-            moveTween = transform.DOMove(position, moveDuration).SetEase(Ease.InOutSine);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
+        moveTween = transform.DOMove(position, moveDuration).SetEase(Ease.InOutSine);
+    }
+
+    public void NoMove() {
+        Destroy(gameObject);
     }
 
     public void StopMoving() {

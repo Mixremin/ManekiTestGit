@@ -36,15 +36,11 @@ public class GameController : MonoBehaviour
         Instance = this;
     }
 
-    private void OnEnable() {
-        playerController.OnEnemyHit += RespawnPlayer;
-    }
-
 
     private void Start() {
         player = Instantiate(playerPrefab, playerSpawnPoint.position, Quaternion.identity);
         playerController = player.GetComponent<PlayerController>();
-        
+        playerController.OnEnemyHit += RespawnPlayer;
 
         cameraFollow.Follow = player.transform;
         
@@ -80,7 +76,10 @@ public class GameController : MonoBehaviour
         StopRoadSpawn();
         uiController.ShowBlackScreen(() => {
             player.transform.position = playerSpawnPoint.position;
+            roadController.ForEach(road => road.ClearEnemies());
+            playerController.SetColliderState(true);
             uiController.HideBlackScreen(() => {
+                playerController.SetLockedState(false);
                 roadController.ForEach(road => road.StartRoadSpawn());
             });
         });
@@ -90,12 +89,8 @@ public class GameController : MonoBehaviour
         roadController.ForEach(road => road.StopRoadSpawn());
     }
 
-    
-    private void OnDisable() {
-        playerController.OnEnemyHit -= RespawnPlayer;
-    }
-
      private void OnDestroy() {
+        playerController.OnEnemyHit -= RespawnPlayer;
         if (Instance == this) {
             Instance = null;
         }

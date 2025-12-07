@@ -4,35 +4,50 @@ using DG.Tweening;
 
 public class PlayerController : MonoBehaviour, IEntity
 {
+    public bool locked = false;
     [Header("Movement")]
     [SerializeField] private float moveDuration = 0.5f;
-    
+    [SerializeField] private Collider playerCollider;
     [Header("Animation")]
-    [SerializeField] private float shakeDuration = 0.5f;
+    [SerializeField] private float shakeDuration = 0.3f;
     [SerializeField] private float shakeStrength = 0.1f;
-    [SerializeField] private int shakeVibrato = 10;
-    [SerializeField] private float shakeRandomness = 90f;
+    [SerializeField] private int shakeVibrato = 5;
+    [SerializeField] private float shakeRandomness = 50f;
 
     private Tween moveTween;
     public Action OnEnemyHit;
     public void Move(Vector3 position, bool canMove)
     {
+        if (locked) return;
         if (canMove) 
         {
-            moveTween = transform.DOMove(position, moveDuration).SetEase(Ease.InOutSine);
+            locked = true;
+            moveTween = transform.DOMove(position, moveDuration).SetEase(Ease.InOutSine).OnComplete(() => locked = false);
         }
         else 
         {
+            transform.DOShakeScale(shakeDuration, shakeStrength, shakeVibrato, shakeRandomness, false, ShakeRandomnessMode.Full);
+        }
+    }
+
+    void OnTriggerEnter(Collider collision)
+    {
+        Debug.Log("Collision with " + collision.transform.name);
+        if (collision.transform.TryGetComponent<EnemyController>(out var enemyController))
+        {   
+            moveTween.Kill();
+            OnEnemyHit?.Invoke();
+            SetColliderState(false);
+            
             transform.DOShakePosition(shakeDuration, shakeStrength, shakeVibrato, shakeRandomness, false, true);
         }
     }
 
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.transform.TryGetComponent<EnemyController>(out var enemyController))
-        {            
-            moveTween.Kill();
-            transform.DOPunchPosition(Vector3.up * 0.1f, 0.1f, 10, 0.1f).OnComplete(() => OnEnemyHit?.Invoke());
-        }
+    public void SetColliderState(bool state) {
+        playerCollider.enabled = state;
+    }
+
+    public void SetLockedState(bool state) {
+        locked = state;
     }
 }

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Numerics;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class RoadController : MonoBehaviour
@@ -27,8 +28,7 @@ public class RoadController : MonoBehaviour
     private int waveWaitingCounter = 0;
     private Transform currentSpawnPoint;
 
-    public void StartRoadSpawn() {
-        isRoadActive = true;
+    void Awake() {
         if(direction == EDirection.LEFT) {
             currentSpawnPoint = rightSideSpawnPoint;
             directionVector = Vector3Int.left;
@@ -36,12 +36,26 @@ public class RoadController : MonoBehaviour
             currentSpawnPoint = leftSideSpawnPoint;
             directionVector = Vector3Int.right;
         }
+    }
+
+    public void StartRoadSpawn() {
+        isRoadActive = true;
+
         CheckForSpawn();
         MoveEnemies();
     }
 
     public void StopRoadSpawn() {
         isRoadActive = false;
+        enemies.ForEach(enemy => enemy.StopMoving());
+    }
+
+    public void ClearEnemies() {
+        waveWaitingCounter = 0;
+        enemiesInLineCounter = 0;
+        cycleTimer = 0;
+        enemies.ForEach(enemy => Destroy(enemy.gameObject));
+        enemies.Clear();
     }
 
     void Update() {
@@ -57,6 +71,7 @@ public class RoadController : MonoBehaviour
 
     private void SpawnEnemy() {
         GameObject enemy = Instantiate(enemyPrefab, currentSpawnPoint.position, UnityEngine.Quaternion.identity);
+        enemy.transform.parent = transform;
         EnemyController enemyController = enemy.GetComponent<EnemyController>();
         enemyController.SetMoveDuration(cycleInterval);
         enemies.Add(enemyController);

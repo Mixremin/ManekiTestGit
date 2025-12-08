@@ -4,5 +4,6 @@ public enum EBlockType
 {
     NONE,
     WALL,
-    INTERACTABLE
+    INTERACTABLE,
+    INTERACTABLE_ON_MOVE
 }

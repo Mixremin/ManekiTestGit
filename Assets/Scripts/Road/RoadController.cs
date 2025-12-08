@@ -56,15 +56,25 @@ public class RoadController : MonoBehaviour
 
     public void StopRoadSpawn() {
         isRoadActive = false;
-        enemies.ForEach(enemy => enemy.StopMoving());
+        for (int i = enemies.Count - 1; i >= 0; i--) {
+            if (enemies[i] != null) {
+                enemies[i].StopMoving();
+            }
+        }
     }
 
     public void ClearEnemies() {
         waveWaitingCounter = 0;
         enemiesInLineCounter = 0;
         cycleTimer = 0;
-        enemies.ForEach(enemy => Destroy(enemy.gameObject));
+        var enemiesToClear = new List<EnemyController>(enemies);
         enemies.Clear();
+        foreach (var enemy in enemiesToClear) {
+            if (enemy != null) {
+                enemy.OnEnemyDestroyed -= DestroyEnemy;
+                Destroy(enemy.gameObject);
+            }
+        }
     }
 
     void Update() {
@@ -84,7 +94,15 @@ public class RoadController : MonoBehaviour
         EnemyController enemyController = enemy.GetComponent<EnemyController>();
         enemyController.SetMoveDuration(enemyMoveDuration);
         enemyController.Move(endSpawnPoint.position);
+
+        enemyController.OnEnemyDestroyed += DestroyEnemy;
         enemies.Add(enemyController);
+    }
+
+    private void DestroyEnemy(EnemyController enemyController) {
+        enemies.Remove(enemyController);
+        enemyController.OnEnemyDestroyed -= DestroyEnemy;
+        Destroy(enemyController.gameObject);
     }
 
     // private void MoveEnemies() {

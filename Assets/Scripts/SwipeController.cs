@@ -4,6 +4,8 @@ using Touch = UnityEngine.InputSystem.EnhancedTouch.Touch;
 
 public class SwipeController : MonoBehaviour
 {
+    [SerializeField] private ESwipeMode swipeMode = ESwipeMode.DISABLED;
+
     [Header("Swipe Settings")]
     [SerializeField] private float minSwipeDistance = 50f;
     [SerializeField] private float maxSwipeTime = 0.5f;
@@ -91,16 +93,45 @@ public class SwipeController : MonoBehaviour
 
     private void OnSwipeLeft()
     {
-        GameController.Instance.MovePlayer(EDirection.LEFT);
+        switch(swipeMode) {
+            case ESwipeMode.MOVE:
+                GameController.Instance?.PlayerMove(EDirection.LEFT);
+                break;
+            case ESwipeMode.ATTACK:
+                break;
+            default:
+                break;
+        }
     }
 
     private void OnSwipeRight()
     {
-        GameController.Instance.MovePlayer(EDirection.RIGHT);
+        switch(swipeMode) {
+            case ESwipeMode.MOVE:
+                GameController.Instance?.PlayerMove(EDirection.RIGHT);
+                break;
+            case ESwipeMode.ATTACK:
+                break;
+            default:
+                break;
+        }
     }
 
     private void OnTap()
     {
-        GameController.Instance.MovePlayer(EDirection.FORWARD);
+        switch(swipeMode) {
+            case ESwipeMode.MOVE:
+                GameController.Instance?.PlayerMove(EDirection.FORWARD);
+                break;
+            case ESwipeMode.ATTACK:
+                GameController.Instance?.PlayerAttack();
+                break;
+            default:
+                break;
+        }
+    }
+
+    public void SetSwipeMode(ESwipeMode swipeMode) {
+        this.swipeMode = swipeMode;
     }
 }

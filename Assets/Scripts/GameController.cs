@@ -3,6 +3,7 @@ using System.Linq;
 using Unity.Cinemachine;
 using UnityEngine;
 using DG.Tweening;
+using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour
 {
@@ -10,10 +11,15 @@ public class GameController : MonoBehaviour
 
     [Header("Player")]
     [SerializeField] private GameObject playerPrefab;
-
     [SerializeField] private Transform playerLineCenter;
-
     [SerializeField] private Transform playerSpawnPoint;
+
+    [Header("Road")]
+    [SerializeField] private List<RoadController> roadController;
+
+    [Header("Final Boss")]
+    [SerializeField] private FinalBossController finalBossController;
+
     [Header("Swipe")]
     [SerializeField] private SwipeController swipeController;
 
@@ -23,8 +29,6 @@ public class GameController : MonoBehaviour
     [Header("Grid")]
     public GridController gridController;
 
-    [Header("Road")]
-    [SerializeField] private List<RoadController> roadController;
 
     [Header("UI")]
     [SerializeField] private UIController uiController;
@@ -41,7 +45,6 @@ public class GameController : MonoBehaviour
         Instance = this;
     }
 
-
     private void Start() {
         player = Instantiate(playerPrefab, playerSpawnPoint.position, Quaternion.identity);
         playerLineCenter.position = player.transform.position;
@@ -54,9 +57,17 @@ public class GameController : MonoBehaviour
         
         roadController = FindObjectsByType<RoadController>(FindObjectsSortMode.None).ToList();
         roadController.ForEach(road => road.StartRoadSpawn());
+
+        swipeController.SetSwipeMode(ESwipeMode.MOVE);
     }
 
-    public void MovePlayer(EDirection direction) {
+    void OnEnable() {
+        finalBossController.OnBossFightStarted += StartFinalBossFight;
+        finalBossController.OnBossFightWon += WinBossFight;
+        finalBossController.OnBossFightLost += RespawnPlayer;
+    }
+
+    public void PlayerMove(EDirection direction) {
         Vector3Int currentCell = grid.WorldToCell(player.transform.position);
         Vector3Int newCell = currentCell + direction switch {
             EDirection.LEFT => Vector3Int.left,
@@ -69,7 +80,6 @@ public class GameController : MonoBehaviour
         testCell.y = 0;
         AbsBlock block = gridController.GetBlock(testCell);
 
-
         switch (block?.GetBlockType() ?? EBlockType.NONE) {
             case EBlockType.NONE:
                 AdjustPlayerLineCenter(grid.GetCellCenterWorld(newCell)); 
@@ -81,9 +91,16 @@ public class GameController : MonoBehaviour
             case EBlockType.INTERACTABLE:
                 playerController.Interact(block);
                 break;
-            }
+            case EBlockType.INTERACTABLE_ON_MOVE:
+                AdjustPlayerLineCenter(grid.GetCellCenterWorld(newCell)); 
+                playerController.Move(grid.GetCellCenterWorld(newCell));
+                playerController.Interact(block);
+                break;
+        }
+    }
 
-        
+    public void PlayerAttack() {
+        playerController.Attack();
     }
 
     private void AdjustPlayerLineCenter(Vector3 newCell) {
@@ -91,8 +108,9 @@ public class GameController : MonoBehaviour
     }
 
     public void RespawnPlayer() {
-        DisableSwipe();
+        ChangeSwipeMode(ESwipeMode.DISABLED);
         StopRoadSpawn();
+        finalBossController.StopBossFight();
         uiController.ShowBlackScreen(() => {
             player.transform.position = playerSpawnPoint.position;
             playerLineCenter.position = player.transform.position;
@@ -100,7 +118,7 @@ public class GameController : MonoBehaviour
             playerController.SetColliderState(true);
             uiController.HideBlackScreen(() => {
                 playerController.SetLockedState(false);
-                EnableSwipe();
+                ChangeSwipeMode(ESwipeMode.MOVE);
                 roadController.ForEach(road => road.StartRoadSpawn());
             });
         });
@@ -110,20 +128,45 @@ public class GameController : MonoBehaviour
         StopRoadSpawn();
         uiController.ShowKeyPuzzle();
         playerController.SetLockedState(true);
-        DisableSwipe();
+        ChangeSwipeMode(ESwipeMode.DISABLED);
     }
 
     public void StopRoadSpawn() {
         roadController.ForEach(road => road.StopRoadSpawn());
     }
 
-    private void DisableSwipe() {
-        swipeController.enabled = false;
-    }
-    private void EnableSwipe() {
-        swipeController.enabled = true;
+    public void ChangeSwipeMode(ESwipeMode swipeMode) {
+        swipeController.SetSwipeMode(swipeMode);
     }
 
+    public GameObject GetPlayer() {
+        return player;
+    }
+
+    public PlayerController GetPlayerController() {
+        return playerController;
+    }
+
+    private void StartFinalBossFight() {
+        ChangeSwipeMode(ESwipeMode.ATTACK);
+        StopRoadSpawn();
+        roadController.ForEach(road => road.ClearEnemies());
+    }
+
+    private void WinBossFight() {
+        ChangeSwipeMode(ESwipeMode.MOVE);
+    }
+
+    public void RestartGame() {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    private void OnDisable() {
+        finalBossController.OnBossFightStarted -= StartFinalBossFight;
+        finalBossController.OnBossFightWon -= WinBossFight;
+        finalBossController.OnBossFightLost -= RespawnPlayer;
+    }
+    
      private void OnDestroy() {
         playerController.OnEnemyHit -= RespawnPlayer;
         if (Instance == this) {

@@ -47,9 +47,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerPrefab: {fileID: 2715098664714605684, guid: bf386f54e5ad7574aa24a029380d6df5, type: 3}
+  playerLineCenter: {fileID: 0}
   playerSpawnPoint: {fileID: 0}
+  roadController: []
+  finalBossController: {fileID: 0}
+  swipeController: {fileID: 6427622177520086690}
   cameraFollow: {fileID: 0}
-  grid: {fileID: 0}
+  gridController: {fileID: 0}
+  uiController: {fileID: 0}
 --- !u!114 &6427622177520086690
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -62,6 +67,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82ae9578865765146a747f11c7691af8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  swipeMode: 1
   minSwipeDistance: 50
   maxSwipeTime: 0.5
   tapMaxDistance: 20

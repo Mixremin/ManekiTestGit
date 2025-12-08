@@ -55,12 +55,11 @@ public class PlayerController : MonoBehaviour, IEntity
         if (locked) return;
         if (Time.time - lastAttackTime < attackCooldown)
         {
-            Debug.Log("Attack is on cooldown!");
             return;
         }
         lastAttackTime = Time.time;
 
-        Collider[] hitColliders = Physics.OverlapSphere(transform.position, attackRadius);
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, attackRadius, LayerMask.GetMask("Boss"));
         attackVFX.gameObject.SetActive(true);
         
         PlayAttackVFX();
@@ -72,7 +71,6 @@ public class PlayerController : MonoBehaviour, IEntity
                 bossEnemy.TakeDamage(attackDamage);
                 Vector3 pushDirection = (hitCollider.transform.position - transform.position).normalized;
                 bossEnemy.PushBack(pushDirection, pushForce);
-                Debug.Log($"Attacked {hitCollider.name} for {attackDamage} damage!");
             }
         }
 
@@ -97,7 +95,6 @@ public class PlayerController : MonoBehaviour, IEntity
 
     void OnTriggerEnter(Collider collision)
     {
-        Debug.Log("Collision with " + collision.transform.name);
         if (collision.transform.TryGetComponent<IEntity>(out var enemyController))
         {   
             locked = true;

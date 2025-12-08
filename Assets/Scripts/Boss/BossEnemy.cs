@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.AI;
 using System;
+using DG.Tweening;
 
 public class BossEnemy : MonoBehaviour, IEntity
 {
@@ -10,8 +11,13 @@ public class BossEnemy : MonoBehaviour, IEntity
     [SerializeField] private GameObject view;
     [SerializeField] private float stopDistance = 0f;
     
+    private Vector3 lastDestination = Vector3.zero;
+    private Tween rotationTween;
+
     private PlayerController player;
     public Action<BossEnemy> OnBossEnemyDied;
+
+
     private void Awake()
     {
         if (rb == null)
@@ -30,38 +36,21 @@ public class BossEnemy : MonoBehaviour, IEntity
             navMeshAgent.stoppingDistance = stopDistance;
             navMeshAgent.updateRotation = false; // We'll handle rotation manually if needed
         }
-    }
 
-
-    private void Update()
-    {
-        if (player != null && navMeshAgent != null && navMeshAgent.isOnNavMesh)
+        if (GameController.Instance != null && player == null)
         {
-            MoveTowardsPlayer();
+            player = GameController.Instance.GetPlayerController();
         }
     }
 
     public void MoveTowardsPlayer()
     {
-        if (GameController.Instance != null && player == null)
+        if (player == null) return;
+        if (navMeshAgent != null && navMeshAgent.isOnNavMesh)
         {
-            player = GameController.Instance.GetPlayerController();
-        }
-
-        navMeshAgent.SetDestination(player.transform.position);
- 
-        if (view != null && navMeshAgent.velocity.magnitude > 0.1f)
-        {
-            Vector3 direction = navMeshAgent.velocity.normalized;
-            direction.y = 0;
-            if (direction != Vector3.zero)
-            {
-                view.transform.rotation = Quaternion.Slerp(
-                    view.transform.rotation, 
-                    Quaternion.LookRotation(direction), 
-                    Time.deltaTime * 10f
-                );
-            }
+            lastDestination = player.transform.position;
+            navMeshAgent.SetDestination(lastDestination);
+            RotateTowardsDestination();
         }
     }
     
@@ -69,7 +58,9 @@ public class BossEnemy : MonoBehaviour, IEntity
     {
         if (navMeshAgent != null && navMeshAgent.isOnNavMesh)
         {
-            navMeshAgent.SetDestination(position);
+            lastDestination = position;
+            navMeshAgent.SetDestination(lastDestination);
+            RotateTowardsDestination();
         }
     }
 
@@ -97,7 +88,7 @@ public class BossEnemy : MonoBehaviour, IEntity
 
             rb.AddForce(direction * force, ForceMode.Impulse);
 
-            Invoke(nameof(ReEnableNavMesh), 0.3f);
+            Invoke(nameof(ReEnableNavMesh), 1.0f);
         }
     }
 
@@ -106,6 +97,26 @@ public class BossEnemy : MonoBehaviour, IEntity
         if (navMeshAgent != null && this != null)
         {
             navMeshAgent.enabled = true;
+            Move(lastDestination);
+        }
+    }
+
+    private void RotateTowardsDestination() {
+        if (view != null)
+        {
+            Vector3 direction = lastDestination - transform.position;
+            direction.y = 0;
+
+            if (direction != Vector3.zero)
+            {
+                rotationTween?.Kill();
+                rotationTween = view.transform.DOLookAt(lastDestination, 0.5f)
+                    .SetLink(gameObject)
+                    .SetEase(Ease.Linear)
+                    .OnComplete(() => {
+                        rotationTween = null;
+                    });
+            }
         }
     }
 

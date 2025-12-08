@@ -7,7 +7,6 @@ public class StepOnBlock : AbsBlock, IInteractable
 
     public void Interact()
     {
-        Debug.Log("StepOnBlock interacted!");
         OnSteppedOn?.Invoke();
     }
 }

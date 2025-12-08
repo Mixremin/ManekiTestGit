@@ -1194,6 +1194,22 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2899136117139400395, guid: d9c5bf573b96f9e4c9b4ec71246f16fd, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.23
+      objectReference: {fileID: 0}
+    - target: {fileID: 2899136117139400395, guid: d9c5bf573b96f9e4c9b4ec71246f16fd, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.284
+      objectReference: {fileID: 0}
+    - target: {fileID: 3499489504252978811, guid: d9c5bf573b96f9e4c9b4ec71246f16fd, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.372
+      objectReference: {fileID: 0}
+    - target: {fileID: 3499489504252978811, guid: d9c5bf573b96f9e4c9b4ec71246f16fd, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.303
+      objectReference: {fileID: 0}
     - target: {fileID: 6713048354676758205, guid: d9c5bf573b96f9e4c9b4ec71246f16fd, type: 3}
       propertyPath: boss1Prefab
       value: 

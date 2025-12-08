@@ -33,10 +33,13 @@ public class FinalBossController : MonoBehaviour
 
     private void StartBossFight()
     {
-        Debug.Log("Boss fight started!");
         OnBossFightStarted?.Invoke();
-        boss1 = Instantiate(boss1Prefab, boss1SpawnPoint.position, Quaternion.identity).GetComponent<BossEnemy>();
-        boss2 = Instantiate(boss2Prefab, boss2SpawnPoint.position, Quaternion.identity).GetComponent<BossEnemy>();
+        var boss1Obj = Instantiate(boss1Prefab, boss1SpawnPoint.position, Quaternion.identity);
+        var boss2Obj = Instantiate(boss2Prefab, boss2SpawnPoint.position, Quaternion.identity);
+        
+        boss1 = boss1Obj.GetComponent<BossEnemy>();
+        boss2 = boss2Obj.GetComponent<BossEnemy>();
+        
         GameController.Instance?.ChangeSwipeMode(ESwipeMode.ATTACK);
 
         boss1.OnBossEnemyDied += RemoveBossEnemy;
@@ -48,7 +51,6 @@ public class FinalBossController : MonoBehaviour
 
     public void StopBossFight()
     {
-        Debug.Log("Boss fight stopped!");
         if (boss1 != null) {
             boss1.NoMove();
             boss1.OnBossEnemyDied -= RemoveBossEnemy;
@@ -80,7 +82,6 @@ public class FinalBossController : MonoBehaviour
 
     private void WinBossFight()
     {
-        Debug.Log("Boss fight won!");
         StopBossFight();
         chestBlock.SpawnChestObject();
         OnBossFightWon?.Invoke();
